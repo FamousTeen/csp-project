@@ -6,10 +6,17 @@ import { createClient } from "@supabase/supabase-js";
 // NextAuth expects a default export of a handler
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
+const supabaseServiceRole = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   // If environment is misconfigured, NextAuth would fail — but throw early
   console.warn("Supabase env vars missing for NextAuth");
+}
+
+if (!supabaseServiceRole) {
+  console.warn(
+    "Missing SUPABASE_SERVICE_ROLE_KEY — required to read profiles server-side"
+  );
 }
 
 const options: NextAuthOptions = {
@@ -35,19 +42,48 @@ const options: NextAuthOptions = {
           return null;
         }
 
-        // Return a minimal user object for NextAuth
+        const user = data.user;
+
+        // Use service role client to read `profiles` securely (server-side only).
+        // This reads the role you store in profiles.id = auth.users.id
+        let role = "user";
+        if (supabaseServiceRole) {
+          try {
+            const supabaseAdmin = createClient(
+              supabaseUrl,
+              supabaseServiceRole
+            );
+            const { data: profile, error: profileErr } = await supabaseAdmin
+              .from("profiles")
+              .select("role")
+              .eq("id", user.id)
+              .single();
+
+            if (!profileErr && profile?.role) {
+              role = profile.role;
+            }
+          } catch (err) {
+            // fallback to default 'user'
+            console.error("Failed to fetch profile role:", err);
+          }
+        }
+
+        // Return user object that will be attached to JWT via callbacks.jwt
         return {
-          id: data.user.id,
-          email: data.user.email,
-          name: data.user.user_metadata?.name ?? undefined,
-          role: data.user.user_metadata?.role ?? "user", // if you store role in metadata
+          id: user.id,
+          email: user.email,
+          name:
+            user.user_metadata?.full_name ??
+            user.user_metadata?.name ??
+            undefined,
+          role,
         };
       },
     }),
   ],
 
   pages: {
-    signIn: "/login", // optional: custom sign-in page
+    signIn: "/auth/login", // optional: custom sign-in page
   },
 
   session: {
@@ -67,6 +103,12 @@ const options: NextAuthOptions = {
       // Attach the user object to the session (client will see session.user)
       if (token.user) session.user = token.user;
       return session;
+    },
+
+    async redirect({ url, baseUrl }) {
+      // gunakan callbackUrl jika dikirim dari signOut/signIn
+      if (url.startsWith("/")) return `${baseUrl}${url}`;
+      return url;
     },
   },
 

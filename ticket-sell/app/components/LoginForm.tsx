@@ -1,11 +1,11 @@
 // components/LoginForm.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import {Eye, EyeClosed} from 'lucide-react';
-import { signIn, type SignInResponse } from "next-auth/react";
+import { Eye, EyeClosed } from 'lucide-react';
+import { signIn, type SignInResponse, useSession } from "next-auth/react";
 
 type FormState = {
   email: string;
@@ -14,10 +14,12 @@ type FormState = {
 
 export default function LoginForm() {
   const router = useRouter();
-  const [form, setForm] = useState<FormState>({ email: "", password: ""});
+  const [form, setForm] = useState<FormState>({ email: "", password: "" });
   const [errors, setErrors] = useState<Record<string, string[] | string> | null>(null);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const { data: session, status } = useSession();
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, type, checked, value } = e.target;
@@ -36,6 +38,12 @@ export default function LoginForm() {
       return;
     }
 
+    if (form.password.length < 6) {
+      setErrors({ password: "Password must be at least 6 characters." });
+      setLoading(false);
+      return;
+    }
+
     try {
       // Use next-auth credentials provider (redirect: false to handle errors)
       const result = (await signIn("credentials", {
@@ -43,6 +51,8 @@ export default function LoginForm() {
         email: form.email,
         password: form.password, // optional; depends on your provider logic
       })) as SignInResponse | undefined;
+
+      setLoading(false);
 
       // signIn may return undefined in some setups; handle common shapes
       // When redirect: false, result is typically { ok?: boolean, error?: string, status?: number }
@@ -55,8 +65,20 @@ export default function LoginForm() {
         return;
       }
 
-      // success -> navigate to home or intended page
-      router.push("/");
+      const sessionRes = await fetch("/api/auth/session");
+      const session = await sessionRes.json();
+
+      if (!session?.user) {
+        setErrors({ general: "Unable to load user session." });
+        return;
+      }
+
+      // Role-based redirect
+      if (session.user.role === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/");
+      }
     } catch (err) {
       console.error("Login error:", err);
       setErrors({ general: "Unexpected error. Please try again." });
@@ -122,9 +144,9 @@ export default function LoginForm() {
           )}
         </div>
 
-        {/* REMEMBER & FORGOT */}
+        {/* FORGOT PASSWORD */}
         <div className="mb-4 flex items-center justify-between">
-          <Link href="/forgot-password" className="text-sm text-indigo-300 hover:text-indigo-400 underline">
+          <Link href="/auth/forgot-pass" className="text-sm text-indigo-300 hover:text-indigo-400 underline">
             Forgot password?
           </Link>
         </div>

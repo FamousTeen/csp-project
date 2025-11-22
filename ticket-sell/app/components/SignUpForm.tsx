@@ -4,6 +4,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { createClient } from "@supabase/supabase-js";
 
 type FormState = {
   name: string;
@@ -33,7 +34,7 @@ export default function SignUpForm() {
     setErrors(null);
 
     try {
-      const res = await fetch("/api/register", {
+      const res = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -64,7 +65,7 @@ export default function SignUpForm() {
       // successful auto-login -> redirect to home
       router.push("/");
     } catch (err) {
-      setErrors({ general: "Unexpected error" });
+      setErrors({ general: "Unexpected error: " + (err as Error).message });
       setLoading(false);
     }
   };
@@ -143,7 +144,7 @@ export default function SignUpForm() {
 
         {/* ACTIONS */}
         <div className="flex items-center justify-between mt-6">
-          <a href="/login" className="text-sm text-indigo-300 hover:text-indigo-400 transition underline">
+          <a href="/auth/login" className="text-sm text-indigo-300 hover:text-indigo-400 transition underline">
             Already registered?
           </a>
 
