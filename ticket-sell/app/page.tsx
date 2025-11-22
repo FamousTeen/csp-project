@@ -1,65 +1,154 @@
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
+  // Dummy
+  const featured = [
+    {
+      id: 1,
+      title: "Music Festival 2025",
+      min_price: 150000,
+      max_price: 450000,
+      start_at: "2025-02-15",
+      venue: "Jakarta Convention Center",
+      image: "/event1.jpg",
+    },
+    {
+      id: 2,
+      title: "Stand Up Comedy Night",
+      min_price: 75000,
+      max_price: 200000,
+      start_at: "2025-03-02",
+      venue: "Bandung Theater",
+      image: "/event2.jpg",
+    },
+    {
+      id: 3,
+      title: "K-Pop Showcase",
+      min_price: 250000,
+      max_price: 650000,
+      start_at: "2025-04-10",
+      venue: "ICE BSD",
+      image: "/event3.jpg",
+    },
+  ];
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <div className="min-h-screen bg-gradient-to-b from-[#0A0F29] via-[#0a1138] to-[#010314] text-white">
+
+      <section className="relative pt-24 pb-32">
+        <div className="w-full max-w-7xl mx-auto px-4 md:px-0 grid md:grid-cols-2 gap-12 items-center">
+
+          <div className="px-2">
+            <h1 className="text-4xl md:text-6xl font-extrabold leading-tight">
+              Book your <br />
+              <span className="text-indigo-400">Tickets for Event!</span>
+            </h1>
+
+            <p className="mt-6 text-gray-300">
+              Safe, Secure, Reliable ticketing.
+              <br />Your ticket to live entertainment!
+            </p>
+
+            <Link
+              href="/events"
+              className="inline-block mt-8 px-6 py-3 bg-white text-black rounded-lg font-semibold shadow-lg hover:scale-105 transition"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+              View More →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 md:gap-5">
             <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+              src="/banner1.jpg"
+              width={500}
+              height={300}
+              alt="Banner 1"
+              className="rounded-xl shadow-lg object-cover h-48 md:h-64 w-full"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+            <Image
+              src="/banner2.jpg"
+              width={500}
+              height={300}
+              alt="Banner 2"
+              className="rounded-xl shadow-lg object-cover h-48 md:h-64 w-full mt-10"
+            />
+
+            <Image
+              src="/banner3.jpg"
+              width={500}
+              height={300}
+              alt="Banner 3"
+              className="rounded-xl shadow-lg object-cover h-48 md:h-64 w-full"
+            />
+
+            <Image
+              src="/banner4.jpg"
+              width={500}
+              height={300}
+              alt="Banner 4"
+              className="rounded-xl shadow-lg object-cover h-48 md:h-64 w-full mt-10"
+            />
+          </div>
+
         </div>
-      </main>
+      </section>
+
+      <section className="py-20">
+        <div className="w-full max-w-7xl mx-auto px-4 md:px-0">
+          <div className="bg-[#0D1B3C]/70 backdrop-blur-xl p-10 rounded-3xl shadow-xl border border-white/10">
+
+            <h2 className="text-3xl font-bold mb-3">Featured Events</h2>
+            <p className="text-gray-300 mb-10">Be sure not to miss these Event today.</p>
+
+            <div className="grid md:grid-cols-3 gap-8">
+              {featured.map((event) => (
+                <div
+                  key={event.id}
+                  className="bg-[#0F1F45] rounded-2xl overflow-hidden shadow-lg border border-white/5"
+                >
+                  <Image
+                    src={event.image}
+                    width={500}
+                    height={300}
+                    alt={event.title}
+                    className="w-full h-48 object-cover"
+                  />
+
+                  <div className="p-6">
+                    <div className="text-sm text-gray-300">
+                      Rp{event.min_price.toLocaleString()} – Rp
+                      {event.max_price.toLocaleString()}
+                    </div>
+
+                    <div className="font-bold text-xl mt-2">{event.title}</div>
+
+                    <div className="text-gray-400 text-sm mt-1">
+                      {new Date(event.start_at).toLocaleDateString("id-ID", {
+                        day: "2-digit",
+                        month: "short",
+                      })}{" "}
+                      | {event.venue}
+                    </div>
+
+                    <Link
+                      href={`/events/${event.id}`}
+                      className="mt-6 block w-full text-center py-3 rounded-xl font-semibold border border-indigo-400 hover:bg-indigo-500 hover:border-indigo-500 hover:text-white transition"
+                    >
+                      Get Tickets →
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+          </div>
+        </div>
+      </section>
+
     </div>
   );
 }
