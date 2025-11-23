@@ -38,17 +38,7 @@ export default function Home() {
 
   return (
     <Layout title="home-page">
-      <div className="min-h-screen bg-gradient-to-b from-[#0A0F29] via-[#0a1138] to-[#010314] text-white">
-
-        {/* 🔥 Top-Right Link */}
-        {/* <div className="absolute top-6 right-6 z-50">
-          <Link
-            href="/auth/login"
-            className="px-4 py-2 text-gray-300 font-medium rounded-lg shadow-lg hover:scale-150 hover:text-blue-600 transition"
-          >
-            Login
-          </Link>
-        </div> */}
+      <div className="min-h-screen bg-linear-to-b from-[#0A0F29] via-[#0a1138] to-[#010314] text-white">
 
         <section className="relative pt-24 pb-32">
           <div className="w-full max-w-7xl mx-auto px-4 md:px-0 grid md:grid-cols-2 gap-12 items-center">
