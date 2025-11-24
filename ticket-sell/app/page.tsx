@@ -36,7 +36,6 @@ export default function Home() {
     <Layout title="home-page">
       <div className="min-h-screen bg-linear-to-b from-[#0A0F29] via-[#0a1138] to-[#010314] text-white">
 
-        {/* Hero Section */}
         <section className="relative pt-24 pb-32">
           <div className="w-full max-w-7xl mx-auto px-4 md:px-0 grid md:grid-cols-2 gap-12 items-center">
 
@@ -59,7 +58,6 @@ export default function Home() {
               </Link>
             </div>
 
-            {/* Banners */}
             <div className="grid grid-cols-2 gap-4 md:gap-5">
               <Image src="/banner1.jpg" width={500} height={300} alt="Banner 1"
                 className="rounded-xl shadow-lg object-cover h-48 md:h-64 w-full" />
@@ -74,7 +72,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Featured Events */}
         <section className="py-20">
           <div className="w-full max-w-7xl mx-auto px-4 md:px-0">
             <div className="bg-[#0D1B3C]/70 backdrop-blur-xl p-10 rounded-3xl shadow-xl border border-white/10">
