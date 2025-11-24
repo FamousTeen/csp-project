@@ -22,9 +22,9 @@ export default function Home() {
         .limit(6);
 
       if (error) {
-        console.log(error);
+        console.error(error);
       } else {
-        setFeatured(data as Concert[]);
+        setFeatured(data);
       }
       setLoading(false);
     };
