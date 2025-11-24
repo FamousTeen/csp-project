@@ -27,7 +27,7 @@ export default function Layout({
         <meta name="description" content="Event ticketing" />
       </Head>
 
-      <div className="min-h-screen bg-gradient-to-b from-[#0A0F29] via-[#0a1138] to-[#010314] text-white relative">
+      <div className="min-h-screen bg-linear-to-b from-[#0A0F29] via-[#0a1138] to-[#010314] text-white relative">
         <header className="py-6">
           <div className="max-w-7xl mx-auto px-4 md:px-0 flex items-center justify-between">
             <Link href="/" className="text-xl font-bold text-white">
@@ -37,6 +37,10 @@ export default function Layout({
             <nav className="flex items-center gap-6">
               <Link href="/events" className="text-sm text-gray-300 hover:text-indigo-300">
                 Events
+              </Link>
+
+              <Link href="/tickets" className="text-sm text-gray-300 hover:text-indigo-300">
+                Tickets
               </Link>
 
               {/* Conditionally render Login link or Profile avatar */}
