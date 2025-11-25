@@ -77,6 +77,8 @@ const options: NextAuthOptions = {
             user.user_metadata?.name ??
             undefined,
           role,
+          accessToken: data.session?.access_token,
+          refreshToken: data.session?.refresh_token,
         };
       },
     }),
@@ -95,6 +97,8 @@ const options: NextAuthOptions = {
       // on sign-in, `user` will be defined
       if (user) {
         token.user = user;
+        token.accessToken = user.accessToken;
+        token.refreshToken = user.refreshToken;
       }
       return token;
     },
@@ -102,6 +106,8 @@ const options: NextAuthOptions = {
     async session({ session, token }) {
       // Attach the user object to the session (client will see session.user)
       if (token.user) session.user = token.user;
+      session.supabaseAccessToken = token.accessToken;
+      session.supabaseRefreshToken = token.refreshToken;
       return session;
     },
 

@@ -38,12 +38,6 @@ export default function LoginForm() {
       return;
     }
 
-    if (form.password.length < 6) {
-      setErrors({ password: "Password must be at least 6 characters." });
-      setLoading(false);
-      return;
-    }
-
     try {
       // Use next-auth credentials provider (redirect: false to handle errors)
       const result = (await signIn("credentials", {
