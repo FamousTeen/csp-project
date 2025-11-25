@@ -11,8 +11,8 @@ type EventParams = {
   id: string;
 };
 
-export default function EventDetailPage({ params }: {params: EventParams }) {
-  const { id } = params;
+export default function EventDetailPage({ params }: {params: Promise<EventParams> }) {
+  const { id } = use <EventParams>(params);
   const [event, setEvent] = useState<Concert>();
   const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState(0);
@@ -20,28 +20,28 @@ export default function EventDetailPage({ params }: {params: EventParams }) {
   const router = useRouter();
   const [authChecked, setAuthChecked] = useState(false);
 
-  useEffect(() => {
-    supabase.auth.getSession().then((res) => {
-      console.log("=== SESSION CHECK ===");
-      console.log(res.data.session);
-    });
-  }, []);
+  // useEffect(() => {
+  //   supabase.auth.getSession().then((res) => {
+  //     console.log("=== SESSION CHECK ===");
+  //     console.log(res.data.session);
+  //   });
+  // }, []);
 
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+  // useEffect(() => {
+  //   const checkAuth = async () => {
+  //     const { data: { session } } = await supabase.auth.getSession();
 
-      if (!session) {
-        router.replace("/auth/login");
-        return;
-      }
+  //     if (!session) {
+  //       router.replace("/auth/login");
+  //       return;
+  //     }
 
-      setAuthChecked(true);
-    };
+  //     setAuthChecked(true);
+  //   };
 
-    checkAuth();
-  }, []);
+  //   checkAuth();
+  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -104,15 +104,15 @@ export default function EventDetailPage({ params }: {params: EventParams }) {
     router.push(`/tickets/${order.id}`);
   };
 
-   if (!authChecked) {
-    return (
-      <Layout title="checking-auth">
-        <div className="min-h-screen flex justify-center items-center text-gray-300">
-          Checking authentication...
-        </div>
-      </Layout>
-    );
-  }
+  //  if (!authChecked) {
+  //   return (
+  //     <Layout title="checking-auth">
+  //       <div className="min-h-screen flex justify-center items-center text-gray-300">
+  //         Checking authentication...
+  //       </div>
+  //     </Layout>
+  //   );
+  // }
 
   if (loading) {
     return (
