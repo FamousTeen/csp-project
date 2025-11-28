@@ -6,6 +6,7 @@ import { supabase } from "../../lib/supabaseClient";
 import Image from "next/image";
 import { Concert } from "../../types/concert";
 import { useRouter } from "next/navigation";
+import { getSession } from "next-auth/react";
 
 type EventParams = {
   id: string;
@@ -20,28 +21,28 @@ export default function EventDetailPage({ params }: {params: Promise<EventParams
   const router = useRouter();
   const [authChecked, setAuthChecked] = useState(false);
 
-  // useEffect(() => {
-  //   supabase.auth.getSession().then((res) => {
-  //     console.log("=== SESSION CHECK ===");
-  //     console.log(res.data.session);
-  //   });
-  // }, []);
+  useEffect(() => {
+    supabase.auth.getSession().then((res) => {
+      console.log("=== SESSION CHECK ===");
+      console.log(res.data.session);
+    });
+  }, []);
 
 
-  // useEffect(() => {
-  //   const checkAuth = async () => {
-  //     const { data: { session } } = await supabase.auth.getSession();
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
 
-  //     if (!session) {
-  //       router.replace("/auth/login");
-  //       return;
-  //     }
+      if (!session) {
+        router.replace("/auth/login");
+        return;
+      }
 
-  //     setAuthChecked(true);
-  //   };
+      setAuthChecked(true);
+    };
 
-  //   checkAuth();
-  // }, []);
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -75,11 +76,15 @@ export default function EventDetailPage({ params }: {params: Promise<EventParams
     if (!event) return;
 
     const total = qty * event.price;
+    const session = await getSession();
+    const userId = session?.user?.id;
+
 
     // 1. Insert order
     const { data: order, error } = await supabase
       .from("orders")
       .insert({
+        user_id: userId,
         concert_id: event.id,
         qty,
         total_price: total,
@@ -104,15 +109,15 @@ export default function EventDetailPage({ params }: {params: Promise<EventParams
     router.push(`/tickets/${order.id}`);
   };
 
-  //  if (!authChecked) {
-  //   return (
-  //     <Layout title="checking-auth">
-  //       <div className="min-h-screen flex justify-center items-center text-gray-300">
-  //         Checking authentication...
-  //       </div>
-  //     </Layout>
-  //   );
-  // }
+   if (!authChecked) {
+    return (
+      <Layout title="checking-auth">
+        <div className="min-h-screen flex justify-center items-center text-gray-300">
+          Checking authentication...
+        </div>
+      </Layout>
+    );
+  }
 
   if (loading) {
     return (
