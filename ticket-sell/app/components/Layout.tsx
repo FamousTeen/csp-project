@@ -71,11 +71,12 @@ export default function Layout({
         {showLogoutModal && (
           <LogoutModal
             onCancel={() => setShowLogoutModal(false)}
-            onConfirm={() =>
+            onConfirm={() => {
+              sessionStorage.clear();
               signOut({
                 callbackUrl: "/auth/login",
-              })
-            }
+              });
+            }}
             userName={session?.user?.name}
           />
         )}

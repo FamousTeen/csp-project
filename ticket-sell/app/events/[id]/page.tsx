@@ -33,7 +33,8 @@ export default function EventDetailPage({ params }: {params: Promise<EventParams
       const { data: { session } } = await supabase.auth.getSession();
 
       if (!session) {
-        router.replace("/auth/login");
+        const callbackUrl = encodeURIComponent(window.location.href);
+        router.replace(`/auth/login?callbackUrl=${callbackUrl}`);
         return;
       }
 
