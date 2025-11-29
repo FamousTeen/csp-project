@@ -6,7 +6,6 @@ import { supabase } from "../../lib/supabaseClient";
 import Image from "next/image";
 import { Concert } from "../../types/concert";
 import { useRouter } from "next/navigation";
-import { getSession } from "next-auth/react";
 
 type EventParams = {
   id: string;
@@ -34,7 +33,7 @@ export default function EventDetailPage({ params }: {params: Promise<EventParams
       const { data: { session } } = await supabase.auth.getSession();
 
       if (!session) {
-        router.replace("/auth/login");
+        router.replace(`/auth/login?redirect=/events/${id}`);
         return;
       }
 
@@ -42,7 +41,7 @@ export default function EventDetailPage({ params }: {params: Promise<EventParams
     };
 
     checkAuth();
-  }, []);
+  }, [router, id]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -73,41 +72,45 @@ export default function EventDetailPage({ params }: {params: Promise<EventParams
   };
 
   const createOrder = async () => {
-    if (!event) return;
+  if (!event) return;
 
-    const total = qty * event.price;
-    const session = await getSession();
-    const userId = session?.user?.id;
+  const total = qty * event.price;
 
+  const { data: { session } } = await supabase.auth.getSession();
 
-    // 1. Insert order
-    const { data: order, error } = await supabase
-      .from("orders")
-      .insert({
-        user_id: userId,
-        concert_id: event.id,
-        qty,
-        total_price: total,
-        status: "success",
-      })
-      .select()
-      .single();
+  if (!session?.user?.id) {
+    alert("User tidak ditemukan. Silakan login ulang.");
+    return;
+  }
 
-    if (error) {
-      console.error(error);
-      alert("Gagal membuat order.");
-      return;
-    }
+  const userId = session.user.id;
 
-    // 2. Kurangi stok konser
-    await supabase
-      .from("concerts")
-      .update({ qty: event.qty - qty })
-      .eq("id", event.id);
+  const { data: order, error } = await supabase
+    .from("orders")
+    .insert({
+      user_id: userId,
+      concert_id: event.id,
+      qty,
+      total_price: total,
+      status: "success",
+    })
+    .select()
+    .single();
 
-    // 3. Redirect ke halaman order
-    router.push(`/tickets/${order.id}`);
-  };
+  if (error) {
+    console.error("ORDER ERROR:", error);
+    alert("Gagal membuat order.");
+    return;
+  }
+
+  await supabase
+    .from("concerts")
+    .update({ qty: event.qty - qty })
+    .eq("id", event.id);
+
+  router.push(`/tickets/${order.id}`);
+};
+
 
    if (!authChecked) {
     return (

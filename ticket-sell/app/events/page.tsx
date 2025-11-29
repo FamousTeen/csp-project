@@ -83,7 +83,7 @@ export default function EventsPage() {
                         className="mt-5 block text-center py-3 border border-indigo-400 rounded-xl 
                                   hover:bg-indigo-500 hover:text-white hover:border-indigo-500 transition"
                       >
-                        View Event →
+                        Get Tickets →
                       </Link>
                     </div>
                   </div>
