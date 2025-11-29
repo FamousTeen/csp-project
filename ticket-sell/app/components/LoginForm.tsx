@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeClosed } from 'lucide-react';
 import { signIn, type SignInResponse, useSession } from "next-auth/react";
 
@@ -14,6 +14,8 @@ type FormState = {
 
 export default function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
   const [form, setForm] = useState<FormState>({ email: "", password: "" });
   const [errors, setErrors] = useState<Record<string, string[] | string> | null>(null);
   const [loading, setLoading] = useState(false);
@@ -70,6 +72,8 @@ export default function LoginForm() {
       // Role-based redirect
       if (session.user.role === "admin") {
         router.push("/admin");
+      } else if (callbackUrl) {
+        router.push(callbackUrl);
       } else {
         router.push("/");
       }
@@ -161,7 +165,7 @@ export default function LoginForm() {
           </button>
         </div>
 
-        {errors?.general && <p className="mt-4 text-red-400">{errors.general}</p>}
+        {errors?.general && <p className="mt-4 text-red-400">Invalid credentials. Please try again.</p>}
       </form>
     </div>
   );
