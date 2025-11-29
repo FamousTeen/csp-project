@@ -4,72 +4,104 @@ import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import Layout from "../../components/Layout";
 import { supabase } from "../../lib/supabaseClient";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Order } from "../../types/order";
 
 export default function TicketDetailPage() {
   const params = useParams();
+  const router = useRouter();
+
   const id = params.id as string;
 
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
-  async function loadOrder() {
-    const { data, error } = await supabase
-      .from("orders")
-      .select(
-        `
-        id,
-        total_price,
-        status,
-        qty,
-        created_at,
-        concerts (
-          title,
-          location,
-          start_at
-        )
-      `
-      )
-      .eq("id", id)
-      .single();
+    const checkAuth = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-    if (error) {
-      console.error("Load order error:", error);
+      if (!session) {
+        router.replace(`/auth/login?redirect=/tickets/${id}`);
+        return;
+      }
+
+      setAuthChecked(true);
+    };
+
+    checkAuth();
+  }, [router, id]);
+
+  useEffect(() => {
+    if (!authChecked) return;
+
+    async function loadOrder() {
+      const { data, error } = await supabase
+        .from("orders")
+        .select(
+          `
+            id,
+            total_price,
+            status,
+            qty,
+            created_at,
+            concerts (
+              title,
+              location,
+              start_at
+            )
+          `
+        )
+        .eq("id", id)
+        .single();
+
+      if (error) {
+        console.error("Load order error:", error);
+        setLoading(false);
+        return;
+      }
+
+      const rawConcert = Array.isArray(data.concerts)
+        ? data.concerts[0]
+        : data.concerts;
+
+      const concert = rawConcert ?? {
+        title: "",
+        location: "",
+        start_at: "",
+      };
+
+      const formatted: Order = {
+        id: data.id,
+        total_price: data.total_price,
+        status: data.status,
+        qty: data.qty,
+        created_at: data.created_at,
+        concerts: {
+          title: concert?.title ?? "",
+          location: concert?.location ?? "",
+          start_at: concert?.start_at ?? "",
+        },
+      };
+
+      setOrder(formatted);
       setLoading(false);
-      return;
     }
 
-    console.log("DATA SUPABASE:", data);
+    loadOrder();
+  }, [authChecked, id]);
 
-    const rawConcert = Array.isArray(data.concerts) ? data.concerts[0] : data.concerts;
-    const concert = rawConcert ?? {
-      title: "",
-      location: "",
-      start_at: "",
-    };
-
-    const formatted: Order = {
-      id: data.id,
-      total_price: data.total_price,
-      status: data.status,
-      qty: data.qty,
-      created_at: data.created_at,
-      concerts: {
-        title: concert?.title ?? "",
-        location: concert?.location ?? "",
-        start_at: concert?.start_at ?? "",
-      },
-    };
-
-    setOrder(formatted);
-    setLoading(false);
+  if (!authChecked) {
+    return (
+      <Layout title="checking-auth">
+        <div className="min-h-screen flex justify-center items-center text-gray-300">
+          Checking authentication...
+        </div>
+      </Layout>
+    );
   }
-
-  loadOrder();
-}, [id]);
-
 
   if (loading) return <Layout title="loading">Loading...</Layout>;
   if (!order) return <Layout title="not-found">Order not found</Layout>;
