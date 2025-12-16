@@ -97,7 +97,7 @@ export default function AdminEventsPage() {
                 // Empty State
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={7}
                     className="px-6 py-12 text-center text-gray-500"
                   >
                     No events found. Start by creating one!
